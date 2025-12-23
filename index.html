@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatyTerm - AI 智能终端管理工具</title>
+    <meta name="description" content="基于 Electron 和 AI 的智能终端管理工具，支持多会话、远程访问、自动化任务处理。">
     <style>
         * {
             margin: 0;
@@ -11,151 +12,194 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* 背景动画 */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* 浮动圆形装饰 */
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 30%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
+        /* Header 样式 */
         header {
             text-align: center;
             color: white;
-            padding: 60px 0;
+            padding: 80px 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         h1 {
-            font-size: 3.5em;
+            font-size: 4em;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .subtitle {
-            font-size: 1.5em;
-            opacity: 0.9;
+            font-size: 1.8em;
+            opacity: 0.95;
             margin-bottom: 40px;
+            font-weight: 300;
         }
 
-        .main-content {
-            background: white;
-            border-radius: 20px;
-            padding: 60px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-
-        .feature-card {
-            padding: 30px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .feature-card h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .feature-card p {
-            color: #555;
-            line-height: 1.8;
-        }
-
-        .download-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 60px;
-            border-radius: 20px;
-            margin: 40px 0;
-            text-align: center;
-        }
-
-        .download-section h2 {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-        }
-
-        .download-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
             margin-top: 40px;
         }
 
-        .download-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 15px;
-            padding: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .download-card:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-5px);
-        }
-
-        .download-card h3 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-        }
-
-        .download-card .platform-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
-        .download-btn {
-            display: inline-block;
-            padding: 15px 40px;
-            background: white;
-            color: #667eea;
-            text-decoration: none;
+        .cta-btn {
+            padding: 16px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
             border-radius: 50px;
-            font-weight: bold;
-            margin-top: 20px;
+            cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .download-btn:hover {
-            background: #f0f0f0;
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        .cta-btn-primary {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .version-info {
-            margin-top: 15px;
-            font-size: 0.9em;
-            opacity: 0.8;
+        .cta-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
         }
 
-        footer {
-            text-align: center;
+        .cta-btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 40px 0;
-            opacity: 0.8;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
         }
 
         .tech-stack {
@@ -163,125 +207,490 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
-            margin: 30px 0;
+            margin: 40px 0 20px;
         }
 
         .tech-badge {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 25px;
             color: white;
-            font-size: 0.9em;
-            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.95em;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
         }
 
+        .tech-badge:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* GitHub Stats */
+        .github-stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 15px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 30px;
+            padding: 60px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+            margin: 40px 0;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 50px;
+            font-size: 2.8em;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .feature-card {
+            padding: 35px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #e0e0e0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .feature-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        /* Download Section */
+        .download-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 40px;
+            border-radius: 30px;
+            margin: 60px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .download-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .download-section h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .download-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px 30px;
+            transition: all 0.4s ease;
+        }
+
+        .download-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .platform-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .download-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .download-card p {
+            opacity: 0.9;
+            margin-bottom: 25px;
+            font-size: 1.05em;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 16px 45px;
+            background: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .version-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            color: white;
+            padding: 60px 20px 40px;
+            opacity: 0.9;
+        }
+
+        footer p {
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+
+        .footer-links {
+            margin: 25px 0;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1em;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-link:hover {
+            opacity: 0.7;
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5em;
             }
 
             .subtitle {
-                font-size: 1.2em;
+                font-size: 1.3em;
             }
 
             .main-content {
-                padding: 30px 20px;
+                padding: 40px 25px;
             }
 
             .download-section {
-                padding: 40px 20px;
+                padding: 50px 25px;
             }
+
+            .section-title {
+                font-size: 2em;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-btn {
+                width: 80%;
+                max-width: 300px;
+            }
+
+            .github-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* 滚动动画 */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
+    <div class="animated-bg"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
     <div class="container">
         <header>
-            <h1>🖥️ WhatyTerm</h1>
-            <p class="subtitle">AI 智能终端管理工具</p>
+            <div class="logo">🖥️</div>
+            <h1>WhatyTerm</h1>
+            <p class="subtitle">AI 驱动的智能终端管理工具</p>
+
             <div class="tech-stack">
-                <span class="tech-badge">Electron</span>
-                <span class="tech-badge">React</span>
-                <span class="tech-badge">Node.js</span>
-                <span class="tech-badge">Socket.IO</span>
-                <span class="tech-badge">AI Powered</span>
+                <span class="tech-badge">⚡ Electron</span>
+                <span class="tech-badge">⚛️ React</span>
+                <span class="tech-badge">🟢 Node.js</span>
+                <span class="tech-badge">🔌 Socket.IO</span>
+                <span class="tech-badge">🤖 AI Powered</span>
+            </div>
+
+            <div class="github-stats">
+                <div class="stat-card">
+                    <span class="stat-number">⭐</span>
+                    <span class="stat-label">开源免费</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">🚀</span>
+                    <span class="stat-label">持续更新</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">🌍</span>
+                    <span class="stat-label">跨平台</span>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="https://github.com/zhangifonly/WhatyTerm/releases/latest" class="cta-btn cta-btn-primary">
+                    📦 立即下载
+                </a>
+                <a href="https://github.com/zhangifonly/WhatyTerm" class="cta-btn cta-btn-secondary">
+                    🔗 GitHub 仓库
+                </a>
             </div>
         </header>
 
-        <div class="main-content">
-            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2.5em; text-align: center;">功能特性</h2>
+        <div class="main-content scroll-reveal">
+            <h2 class="section-title">✨ 核心功能</h2>
 
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3>🤖 AI 自动化</h3>
-                    <p>集成 Claude AI，自动检测终端状态，智能处理任务流程，无需人工干预即可完成复杂的开发任务。</p>
+                    <h3>🤖 AI 智能自动化</h3>
+                    <p>集成 Claude AI，自动检测终端状态，智能处理任务流程。支持代码编写、测试运行、错误修复，让 AI 成为你的开发助手。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🔄 会话管理</h3>
-                    <p>强大的会话管理系统，支持会话创建、附加、分离和切换，终端状态永久保存，随时恢复工作现场。</p>
+                    <h3>🔄 强大会话管理</h3>
+                    <p>基于 tmux 的会话管理系统，支持会话创建、附加、分离和切换。终端状态永久保存，随时恢复工作现场，永不丢失进度。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🌐 Web 界面</h3>
-                    <p>现代化的 Web 终端界面，支持多会话切换、实时输出、历史记录查看，随时随地访问。</p>
+                    <h3>🌐 现代 Web 界面</h3>
+                    <p>基于 React 的现代化 Web 终端界面，支持多会话切换、实时输出、历史记录查看。响应式设计，完美适配各种屏幕尺寸。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🌍 远程管理</h3>
-                    <p>随时随地通过浏览器访问和管理终端会话，无需 VPN，支持多设备同时连接，工作状态实时同步。</p>
+                    <h3>🌍 随时远程访问</h3>
+                    <p>通过浏览器随时随地访问和管理终端会话，支持 FRP 内网穿透，无需 VPN。多设备同时连接，工作状态实时同步。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🤖 多 AI 引擎</h3>
-                    <p>支持 Claude Code、Codex、Gemini 等多种 AI 引擎，根据任务类型智能选择最佳模型，最大化自动化效率。</p>
+                    <h3>🎯 多 AI 引擎支持</h3>
+                    <p>支持 Claude Code、OpenAI Codex、Google Gemini 等多种 AI 引擎。根据任务类型智能选择最佳模型，最大化自动化效率。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🔌 多供应商支持</h3>
-                    <p>支持多个 API 供应商配置，自动健康检查和故障转移，确保服务高可用。</p>
+                    <h3>🔌 多供应商配置</h3>
+                    <p>灵活配置多个 API 供应商，自动健康检查和故障转移。确保服务高可用，API 配额用完自动切换备用供应商。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>📊 实时监控</h3>
-                    <p>实时显示终端输出、光标位置、AI 状态，完整的历史记录和日志系统。</p>
+                    <h3>📊 实时状态监控</h3>
+                    <p>实时显示终端输出、光标位置、AI 分析状态。完整的历史记录和日志系统，支持操作回放和问题追溯。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🖥️ 跨平台</h3>
-                    <p>支持 macOS (Intel/Apple Silicon)、Windows (WSL2)、Linux，一套工具适配多个平台。</p>
+                    <h3>🖥️ 全平台支持</h3>
+                    <p>支持 macOS (Intel/Apple Silicon)、Windows (WSL2)、Linux 多个平台。一套工具适配所有环境，统一的使用体验。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>⚡ 智能调度</h3>
-                    <p>AI 自动分析任务复杂度，动态选择最合适的模型和策略，平衡速度、成本与质量。</p>
+                    <h3>⚡ 智能任务调度</h3>
+                    <p>AI 自动分析任务复杂度，动态选择最合适的模型和策略。平衡速度、成本与质量，让每一次调用都物有所值。</p>
                 </div>
             </div>
 
-            <h2 style="color: #667eea; margin: 60px 0 30px; font-size: 2.5em; text-align: center;">适用场景</h2>
+            <h2 class="section-title" style="margin-top: 80px;">💡 适用场景</h2>
 
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>💻 开发自动化</h3>
-                    <p>让 AI 自动编写代码、运行测试、修复错误、部署项目，大幅提升开发效率。</p>
+                    <p>让 AI 自动编写代码、运行测试、修复错误、部署项目。大幅提升开发效率，专注于架构设计和业务逻辑。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>🔧 运维任务</h3>
-                    <p>自动化服务器管理、日志分析、性能监控，解放运维人员双手。</p>
+                    <h3>🔧 运维任务管理</h3>
+                    <p>自动化服务器管理、日志分析、性能监控、故障排查。解放运维人员双手，让机器处理重复性工作。</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>📚 学习辅助</h3>
-                    <p>AI 辅助学习新技术、调试代码、理解错误信息，最佳的编程学习伙伴。</p>
+                    <h3>📚 编程学习辅助</h3>
+                    <p>AI 辅助学习新技术、调试代码、理解错误信息。实时解答问题，提供最佳实践建议，最佳的编程学习伙伴。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎨 快速原型开发</h3>
+                    <p>快速搭建项目脚手架、生成基础代码、配置开发环境。从想法到原型，只需几分钟时间。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔬 技术实验探索</h3>
+                    <p>在隔离的终端环境中安全地尝试新技术、测试新工具、验证新想法。失败了也不会影响主系统。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>👥 团队协作开发</h3>
+                    <p>共享终端会话，远程协作调试。团队成员可以实时查看终端输出，共同解决技术问题。</p>
                 </div>
             </div>
         </div>
 
-        <div class="download-section">
-            <h2>立即下载 v1.0.5</h2>
-            <p style="font-size: 1.2em; opacity: 0.9;">选择适合你的平台版本</p>
+        <div class="download-section scroll-reveal">
+            <h2>🚀 立即开始</h2>
+            <div class="version-badge">📌 最新版本 v1.0.0</div>
+            <p style="font-size: 1.3em; opacity: 0.95; margin: 20px 0;">选择适合你的平台版本，开启 AI 终端之旅</p>
 
             <div class="download-grid">
                 <div class="download-card">
@@ -289,7 +698,7 @@
                     <h3>macOS</h3>
                     <p>支持 Intel 和 Apple Silicon</p>
                     <a href="https://github.com/zhangifonly/WhatyTerm/releases/latest" class="download-btn">下载 DMG</a>
-                    <p class="version-info">Intel (x64) / Apple Silicon (arm64)</p>
+                    <p class="version-info">macOS 10.15+ (Catalina)</p>
                 </div>
 
                 <div class="download-card">
@@ -303,27 +712,67 @@
                 <div class="download-card">
                     <div class="platform-icon">🐧</div>
                     <h3>Linux</h3>
-                    <p>AppImage / DEB 包</p>
+                    <p>AppImage / DEB / RPM</p>
                     <a href="https://github.com/zhangifonly/WhatyTerm/releases/latest" class="download-btn">下载安装包</a>
-                    <p class="version-info">Ubuntu / Debian / 其他发行版</p>
+                    <p class="version-info">Ubuntu / Debian / Fedora</p>
                 </div>
             </div>
 
-            <p style="margin-top: 40px; font-size: 1.1em;">
-                📦 最新版本：
-                <a href="https://github.com/zhangifonly/WhatyTerm/releases/tag/v1.0.5"
-                   style="color: white; text-decoration: underline; font-weight: bold;">v1.0.5</a>
-                <br><br>
-                所有历史版本：
-                <a href="https://github.com/zhangifonly/WhatyTerm/releases"
-                   style="color: white; text-decoration: underline;">GitHub Releases</a>
-            </p>
+            <div style="margin-top: 50px; padding: 30px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(10px);">
+                <p style="font-size: 1.2em; margin-bottom: 15px;">
+                    📦 查看所有版本：
+                    <a href="https://github.com/zhangifonly/WhatyTerm/releases"
+                       style="color: white; font-weight: bold; text-decoration: underline;">GitHub Releases</a>
+                </p>
+                <p style="font-size: 1.1em; opacity: 0.9;">
+                    📖 使用文档 | 🐛 问题反馈 | 💬 社区讨论
+                </p>
+            </div>
         </div>
 
         <footer>
-            <p>&copy; 2024 WhatyTerm. All rights reserved.</p>
-            <p style="margin-top: 10px;">Made with ❤️ for developers</p>
+            <div class="footer-links">
+                <a href="https://github.com/zhangifonly/WhatyTerm" class="footer-link">GitHub</a>
+                <a href="https://github.com/zhangifonly/WhatyTerm/issues" class="footer-link">反馈</a>
+                <a href="https://github.com/zhangifonly/WhatyTerm/releases" class="footer-link">下载</a>
+            </div>
+            <p>&copy; 2025 WhatyTerm. All rights reserved.</p>
+            <p style="margin-top: 15px; font-size: 1.1em;">Made with ❤️ by developers, for developers</p>
         </footer>
     </div>
+
+    <script>
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
