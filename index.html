@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatyTerm - AI 智能终端管理工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 60px 0;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            padding: 30px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .feature-card p {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px;
+            border-radius: 20px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .download-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .download-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .download-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+        }
+
+        .download-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .download-card .platform-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .download-btn:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .version-info {
+            margin-top: 15px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+            opacity: 0.8;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .tech-badge {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9em;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .subtitle {
+                font-size: 1.2em;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .download-section {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖥️ WhatyTerm</h1>
+            <p class="subtitle">AI 智能终端管理工具</p>
+            <div class="tech-stack">
+                <span class="tech-badge">Electron</span>
+                <span class="tech-badge">React</span>
+                <span class="tech-badge">Node.js</span>
+                <span class="tech-badge">tmux</span>
+                <span class="tech-badge">Socket.IO</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2.5em; text-align: center;">功能特性</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤖 AI 自动化</h3>
+                    <p>集成 Claude AI，自动检测终端状态，智能处理任务流程，无需人工干预即可完成复杂的开发任务。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔄 会话管理</h3>
+                    <p>基于 tmux 的强大会话管理，支持会话创建、附加、分离和切换，终端状态永久保存。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🌐 Web 界面</h3>
+                    <p>现代化的 Web 终端界面，支持多会话切换、实时输出、历史记录查看，随时随地访问。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔌 多供应商支持</h3>
+                    <p>支持多个 Claude API 供应商配置，自动健康检查和故障转移，确保服务高可用。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📊 实时监控</h3>
+                    <p>实时显示终端输出、光标位置、AI 状态，完整的历史记录和日志系统。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🖥️ 跨平台</h3>
+                    <p>支持 macOS (Intel/Apple Silicon)、Windows (WSL2)、Linux，一套工具适配多个平台。</p>
+                </div>
+            </div>
+
+            <h2 style="color: #667eea; margin: 60px 0 30px; font-size: 2.5em; text-align: center;">适用场景</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💻 开发自动化</h3>
+                    <p>让 AI 自动编写代码、运行测试、修复错误、部署项目，大幅提升开发效率。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔧 运维任务</h3>
+                    <p>自动化服务器管理、日志分析、性能监控，解放运维人员双手。</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📚 学习辅助</h3>
+                    <p>AI 辅助学习新技术、调试代码、理解错误信息，最佳的编程学习伙伴。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2>立即下载</h2>
+            <p style="font-size: 1.2em; opacity: 0.9;">选择适合你的平台版本</p>
+
+            <div class="download-grid">
+                <div class="download-card">
+                    <div class="platform-icon">🍎</div>
+                    <h3>macOS</h3>
+                    <p>支持 Intel 和 Apple Silicon</p>
+                    <a href="https://github.com/zhangifonly/WhatyTerm/releases" class="download-btn">下载 DMG</a>
+                    <p class="version-info">Intel (x64) / Apple Silicon (arm64)</p>
+                </div>
+
+                <div class="download-card">
+                    <div class="platform-icon">🪟</div>
+                    <h3>Windows</h3>
+                    <p>需要 WSL2 环境支持</p>
+                    <a href="https://github.com/zhangifonly/WhatyTerm/releases" class="download-btn">下载 EXE</a>
+                    <p class="version-info">Windows 10/11 + WSL2</p>
+                </div>
+
+                <div class="download-card">
+                    <div class="platform-icon">🐧</div>
+                    <h3>Linux</h3>
+                    <p>AppImage / DEB 包</p>
+                    <a href="https://github.com/zhangifonly/WhatyTerm/releases" class="download-btn">下载安装包</a>
+                    <p class="version-info">Ubuntu / Debian / 其他发行版</p>
+                </div>
+            </div>
+
+            <p style="margin-top: 40px; font-size: 1.1em;">
+                📦 所有版本发布在
+                <a href="https://github.com/zhangifonly/WhatyTerm/releases"
+                   style="color: white; text-decoration: underline;">GitHub Releases</a>
+            </p>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 WhatyTerm. All rights reserved.</p>
+            <p style="margin-top: 10px;">Made with ❤️ for developers</p>
+        </footer>
+    </div>
+</body>
+</html>
